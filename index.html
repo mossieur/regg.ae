@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>regg.ae</title>
+	<script type="application/ld+json">{
+		"@context": "https://schema.org",
+		"@type": "WebSite",
+		"name": "regg.ae",
+		"url": "https://regg.ae/",
+		"creditText": "https://www.jamminvibezradio.com/"
+	}</script>
+	<style>
+	body, html {
+		font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif;
+		padding: 0;
+		margin: 0;
+		color: white;
+		overflow: hidden;
+		height: 100%;
+		font-size: 100%;
+	}
+
+	body {
+		background-color: #000;
+		background-image: -webkit-gradient(linear, left top,left bottom, from(#212121), to(#0f0f0f));
+		background-image: -webkit-linear-gradient(top, #212121, #0f0f0f);
+		background-image: linear-gradient(to bottom, #212121, #0f0f0f);
+	}
+
+	.center-parent {
+		height: 100%;
+		position: absolute;
+		top: 0;
+		width: 100%;
+		background-repeat: no-repeat;
+		background-size: 160rem;
+		background-position: 20% 10%;
+	}
+
+	.center-container {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 100%;
+	}
+
+	.song {
+		text-align: center;
+	}
+
+	.art {
+		display: block;
+		margin: auto;
+		border-radius: 0.75rem;
+		height: 15rem;
+		width: 15rem;
+	}
+
+	.text-container {
+		padding-top: 1.5rem;
+	}
+
+	.title {
+		width: 22rem;
+		margin-bottom: 0.5rem;
+		display: block;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-weight: bold;
+		font-size: 1.5rem;
+		line-height: 2rem;
+		color: #f1f1f1;
+	}
+
+	.artist {
+		font-weight: 400;
+		font-size: 1rem;
+		line-height: 1.5rem;
+		color: #b7b7b7;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display: block;
+	}
+
+	@media (min-width: 1500px) {
+		html {
+			font-size: 150%;
+		}
+	}
+
+	@media (min-width: 2000px) {
+		html {
+			font-size: 200%;
+		}
+	}
+	</style>
+</head>
+<body>
+	<div class="center-parent">
+		<div class="center-container">
+			<div class="song">
+				<img class="art" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==">
+				<div class="text-container">
+					<div class="title"></div>
+					<div class="artist"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<audio autoplay><source src="https://azuracast.jammimvibez.com/listen/reggae/stream"></audio>
+	<script src="jquery.min.js"></script>
+	<script src="color-thief.js"></script>
+	<script>
+	body = document.querySelector('body');
+
+	body.onclick = function() {
+		req = body.requestFullScreen || body.webkitRequestFullScreen || body.mozRequestFullScreen;
+		req.call(body);
+		document.querySelector('audio').play()
+	};
+
+	text = '';
+
+	function nowplaying() {
+		$.getJSON('https://azuracast.jammimvibez.com/api/nowplaying/reggae?refresh=' + Date.now(), function(json) {
+			if (json['now_playing']['song']['text'] != text) {
+				toDataURL(json['now_playing']['song']['art'], function(dataUrl) {
+					$('.art').attr('src', dataUrl);
+				});
+
+				$('.art').one('load', function() {
+					colorThief = new ColorThief();
+					img = document.querySelector('img');
+					color = colorThief.getColor(img);
+
+					p = (0.2126 * sRGBtoLin(color[0] / 255) + 0.7152 * sRGBtoLin(color[1] / 255) + 0.0722 * sRGBtoLin(color[2] / 255));
+
+					color[0] = adjustBrightness( color[0], p );
+					color[1] = adjustBrightness( color[1], p );
+					color[2] = adjustBrightness( color[2], p );
+
+					$('.center-parent').attr('style', 'background-image: linear-gradient(rgba('+color[0]+','+color[1]+','+color[2]+', 0.5), rgba('+color[0]+','+color[1]+','+color[2]+', 0.5)), url("https://wsrv.nl/?url=' + json['now_playing']['song']['art'] + '&blur=12")');
+				});
+				$('.title').html(json['now_playing']['song']['title']);
+				$('.artist').html(json['now_playing']['song']['artist']);
+				text = json['now_playing']['song']['text'];
+			}
+		})
+	}
+
+	nowplaying();
+	setInterval(function() {
+		nowplaying()
+	}, 4000);
+
+	p = 0;
+	px = 20;
+	py = 10;
+
+	function move() {
+		bg = $('.center-parent');
+		x = Math.floor(Math.random() * (80 - 20 + 1) + 20);
+		y = Math.floor(Math.random() * (60 - 10 + 1) + 10);
+
+		if (p == 0) {
+			p = 1;
+			bg.animate({
+				'background-position-x': px + '%',
+				'background-position-y': y + '%'
+			}, Math.abs(py - y) * 4000, 'linear', move);
+			py = y
+		} else {
+			p = 0;
+			bg.animate({
+				'background-position-x': x + '%',
+				'background-position-y': py + '%'
+			}, Math.abs(px - x) * 4000, 'linear', move);
+			px = x
+		}
+	}
+
+	move();
+
+	function toDataURL(url, callback) {
+		xhr = new XMLHttpRequest();
+		xhr.onload = function() {
+			reader = new FileReader();
+			reader.onloadend = function() {
+				callback(reader.result);
+			}
+			reader.readAsDataURL(xhr.response);
+		};
+		xhr.open('GET', url);
+		xhr.responseType = 'blob';
+		xhr.send();
+	}
+
+	function sRGBtoLin(color) {
+		if ( color <= 0.04045 ) {
+			return color / 12.92;
+		} else {
+			return Math.pow((( color + 0.055)/1.055),2.4);
+		}
+	}
+
+	function adjustBrightness(color, percent) {
+		adjustableLimit = -Math.abs(percent) < 0 ? color : 255 - color;
+		adjustAmount = Math.ceil(adjustableLimit * -Math.abs(percent));
+		return color + adjustAmount;
+	}
+	</script>
+</body>
+</html>
