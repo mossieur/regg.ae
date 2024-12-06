@@ -131,7 +131,7 @@
 	function nowplaying() {
 		$.getJSON('https://azuracast.jammimvibez.com/api/nowplaying/reggae?refresh=' + Date.now(), function(json) {
 			if (json['now_playing']['song']['text'] != text) {
-				toDataURL('https://wsrv.nl/?url='+json['now_playing']['song']['art']+'&w=640&h=360&fit=cover&a=center', function(dataUrl) {
+				toDataURL(json['now_playing']['song']['art'], function(dataUrl) {
 					image = new Image();
 					image.src = dataUrl;
 					image.onload = function () {
