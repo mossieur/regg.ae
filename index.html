@@ -51,7 +51,10 @@
 	}
 
 	.art {
+		background-position: center;
+		background-repeat: no-repeat;
 		display: block;
+		background-size: 100%;
 		margin: auto;
 		border-radius: 0.75rem;
 		height: 15rem;
@@ -103,7 +106,7 @@
 	<div class="center-parent">
 		<div class="center-container">
 			<div class="song">
-				<img class="art" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==">
+				<div class="art"></div>
 				<div class="text-container">
 					<div class="title"></div>
 					<div class="artist"></div>
@@ -113,7 +116,7 @@
 	</div>
 	<audio autoplay><source src="https://azuracast.jammimvibez.com/listen/reggae/stream"></audio>
 	<script src="jquery.min.js"></script>
-	<script src="color-thief.js"></script>
+	<script src="palette.min.js"></script>
 	<script>
 	body = document.querySelector('body');
 
@@ -129,21 +132,12 @@
 		$.getJSON('https://azuracast.jammimvibez.com/api/nowplaying/reggae?refresh=' + Date.now(), function(json) {
 			if (json['now_playing']['song']['text'] != text) {
 				toDataURL(json['now_playing']['song']['art'], function(dataUrl) {
-					$('.art').attr('src', dataUrl);
-				});
-
-				$('.art').one('load', function() {
-					colorThief = new ColorThief();
-					img = document.querySelector('img');
-					color = colorThief.getColor(img);
-
-					p = (0.2126 * sRGBtoLin(color[0] / 255) + 0.7152 * sRGBtoLin(color[1] / 255) + 0.0722 * sRGBtoLin(color[2] / 255));
-
-					color[0] = adjustBrightness( color[0], p );
-					color[1] = adjustBrightness( color[1], p );
-					color[2] = adjustBrightness( color[2], p );
-
-					$('.center-parent').attr('style', 'background-image: linear-gradient(rgba('+color[0]+','+color[1]+','+color[2]+', 0.5), rgba('+color[0]+','+color[1]+','+color[2]+', 0.5)), url("https://wsrv.nl/?url=' + json['now_playing']['song']['art'] + '&blur=12")');
+					image = new Image();
+					image.src = dataUrl;
+					image.onload = function () {
+						palette = new Palette(image);
+						$('.center-parent').attr('style', 'background-image: linear-gradient(rgba('+palette.getDarkVibrantColor()+',0.5), rgba('+palette.getDarkVibrantColor()+',0.5)), url("https://wsrv.nl/?url=' + json['now_playing']['song']['art'] + '&blur=12")');
+					}
 				});
 
 				if ('mediaSession' in navigator) {
@@ -160,7 +154,8 @@
 						position: json['now_playing']['elapsed']
 					});
 				}
-
+				
+				$('.art').attr('style', 'background-image: url("' + json['now_playing']['song']['art'] + '")');
 				$('.title').html(json['now_playing']['song']['title']);
 				$('.artist').html(json['now_playing']['song']['artist']);
 				text = json['now_playing']['song']['text'];
@@ -213,20 +208,6 @@
 		xhr.open('GET', url);
 		xhr.responseType = 'blob';
 		xhr.send();
-	}
-
-	function sRGBtoLin(color) {
-		if ( color <= 0.04045 ) {
-			return color / 12.92;
-		} else {
-			return Math.pow((( color + 0.055)/1.055),2.4);
-		}
-	}
-
-	function adjustBrightness(color, percent) {
-		adjustableLimit = -Math.abs(percent) < 0 ? color : 255 - color;
-		adjustAmount = Math.ceil(adjustableLimit * -Math.abs(percent));
-		return color + adjustAmount;
 	}
 	</script>
 </body>
