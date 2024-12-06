@@ -136,7 +136,7 @@
 					image.src = dataUrl;
 					image.onload = function () {
 						palette = new Palette(image);
-						$('.center-parent').attr('style', 'background-image: linear-gradient(rgba('+(palette.getDarkVibrantColor() ?? palette.getDominantColor())+',0.5), rgba('+(palette.getDarkVibrantColor() ?? palette.getDominantColor())+',0.5)), url("https://wsrv.nl/?url=' + json['now_playing']['song']['art'] + '&blur=12")');
+						$('.center-parent').attr('style', 'background-image: linear-gradient(rgba('+(palette.getVibrantColor() ?? palette.getDominantColor())+',0.5), rgba('+(palette.getVibrantColor() ?? palette.getDominantColor())+',0.5)), url("https://wsrv.nl/?url=' + json['now_playing']['song']['art'] + '&blur=12")');
 					}
 				});
 
