@@ -138,9 +138,9 @@
 						palette = new Palette(image);
 						color = (palette.getVibrantColor() ?? palette.getDominantColor());
 						p = (0.2126 * sRGBtoLin(color[0] / 255) + 0.7152 * sRGBtoLin(color[1] / 255) + 0.0722 * sRGBtoLin(color[2] / 255));
-						color[0] = adjustBrightness( color[0], p );
-						color[1] = adjustBrightness( color[1], p );
-						color[2] = adjustBrightness( color[2], p );
+						color[0] = adjustBrightness( color[0], p+0.3 );
+						color[1] = adjustBrightness( color[1], p+0.3 );
+						color[2] = adjustBrightness( color[2], p+0.3 );
 						$('.center-parent').attr('style', 'background-image: linear-gradient(rgba('+color[0]+','+color[1]+','+color[2]+',0.5), rgba('+color[0]+','+color[1]+','+color[2]+',0.5)), url("https://wsrv.nl/?url=' + json['now_playing']['song']['art'] + '&blur=12")');
 					}
 				});
