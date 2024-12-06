@@ -139,9 +139,9 @@
 						swatches = vibrant.swatches()
 						color = swatches['Vibrant']['rgb'];
 
-						color[0] = adjustBrightness( color[0], 0.4 );
-						color[1] = adjustBrightness( color[1], 0.4 );
-						color[2] = adjustBrightness( color[2], 0.4 );
+						color[0] = adjustBrightness( color[0], -0.4 );
+						color[1] = adjustBrightness( color[1], -0.4 );
+						color[2] = adjustBrightness( color[2], -0.4 );
 
 						$('.center-parent').attr('style', 'background-image: linear-gradient(rgba('+color[0]+','+color[1]+','+color[2]+',0.5), rgba('+color[0]+','+color[1]+','+color[2]+',0.5)), url("https://wsrv.nl/?url=' + json['now_playing']['song']['art'] + '&blur=12")');
 					}
@@ -218,8 +218,8 @@
 	}
 
 	function adjustBrightness(color, percent) {
-		adjustableLimit = -Math.abs(percent) < 0 ? color : 255 - color;
-		adjustAmount = Math.ceil(adjustableLimit * -Math.abs(percent));
+		adjustableLimit = percent < 0 ? color : 255 - color;
+		adjustAmount = Math.ceil(adjustableLimit * percent);
 		return color + adjustAmount;
 	}
 	</script>
