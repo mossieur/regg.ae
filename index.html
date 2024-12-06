@@ -145,6 +145,16 @@
 
 					$('.center-parent').attr('style', 'background-image: linear-gradient(rgba('+color[0]+','+color[1]+','+color[2]+', 0.5), rgba('+color[0]+','+color[1]+','+color[2]+', 0.5)), url("https://wsrv.nl/?url=' + json['now_playing']['song']['art'] + '&blur=12")');
 				});
+
+				if ('mediaSession' in navigator) {
+					navigator.mediaSession.metadata = new MediaMetadata({
+						title: json['now_playing']['song']['title'],
+						artist: json['now_playing']['song']['artist'],
+						album: json['now_playing']['song']['album'],
+						artwork: [{ src: json['now_playing']['song']['art'] }],
+					});
+				}
+
 				$('.title').html(json['now_playing']['song']['title']);
 				$('.artist').html(json['now_playing']['song']['artist']);
 				text = json['now_playing']['song']['text'];
