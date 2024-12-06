@@ -153,6 +153,12 @@
 						album: json['now_playing']['song']['album'],
 						artwork: [{ src: json['now_playing']['song']['art'] }],
 					});
+
+					navigator.mediaSession.setPositionState({
+						duration: json['now_playing']['duration'],
+						playbackRate: 1,
+						position: json['now_playing']['elapsed']
+					});
 				}
 
 				$('.title').html(json['now_playing']['song']['title']);
