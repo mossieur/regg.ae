@@ -116,7 +116,7 @@
 	</div>
 	<audio autoplay><source src="https://azuracast.jammimvibez.com/listen/reggae/stream"></audio>
 	<script src="jquery.min.js"></script>
-	<script src="palette.min.js"></script>
+	<script src="Vibrant.min.js"></script>
 	<script>
 	body = document.querySelector('body');
 
@@ -135,8 +135,9 @@
 					image = new Image();
 					image.src = dataUrl;
 					image.onload = function () {
-						palette = new Palette(image);
-						color = (palette.getVibrantColor() ?? palette.getDominantColor());
+						vibrant = new Vibrant(image);
+						swatches = vibrant.swatches()
+						color = swatches['Vibrant']['rgb'];
 						p = (0.2126 * sRGBtoLin(color[0] / 255) + 0.7152 * sRGBtoLin(color[1] / 255) + 0.0722 * sRGBtoLin(color[2] / 255));
 						color[0] = adjustBrightness( color[0], p+0.3 );
 						color[1] = adjustBrightness( color[1], p+0.3 );
