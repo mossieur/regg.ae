@@ -118,109 +118,112 @@
 	<script src="jquery.min.js"></script>
 	<script src="palette.min.js"></script>
 	<script>
-	body = document.querySelector('body');
+	document.addEventListener('DOMContentLoaded', () => {
+		const body = document.querySelector('body');
+		let currentText = '';
 
-	body.onclick = function() {
-		req = body.requestFullScreen || body.webkitRequestFullScreen || body.mozRequestFullScreen;
-		req.call(body);
-		document.querySelector('audio').play()
-	};
-
-	text = '';
-
-	function nowplaying() {
-		$.getJSON('https://azuracast.jammimvibez.com/api/nowplaying/reggae?refresh=' + Date.now(), function(json) {
-			if (json['now_playing']['song']['text'] != text) {
-				toDataURL(json['now_playing']['song']['art'], function(dataUrl) {
-					image = new Image();
-					image.src = dataUrl;
-					image.onload = function () {
-						palette = new Palette(image);
-						color = palette.getVibrantColor() ?? palette.getDominantColor();
-
-						color[0] = adjustBrightness( color[0], -0.75 );
-						color[1] = adjustBrightness( color[1], -0.75 );
-						color[2] = adjustBrightness( color[2], -0.75 );
-
-						$('.center-parent').attr('style', 'background-image: linear-gradient(rgba('+color[0]+','+color[1]+','+color[2]+',0.5), rgba('+color[0]+','+color[1]+','+color[2]+',0.5)), url("https://wsrv.nl/?url=' + json['now_playing']['song']['art'] + '&blur=12")');
-					}
-				});
-
-				if ('mediaSession' in navigator) {
-					navigator.mediaSession.metadata = new MediaMetadata({
-						title: json['now_playing']['song']['title'],
-						artist: json['now_playing']['song']['artist'],
-						album: json['now_playing']['song']['album'],
-						artwork: [{ src: json['now_playing']['song']['art'] }],
-					});
-
-					navigator.mediaSession.setPositionState({
-						duration: json['now_playing']['duration'],
-						playbackRate: 1,
-						position: json['now_playing']['elapsed']
-					});
-				}
-				
-				$('.art').attr('style', 'background-image: url("' + json['now_playing']['song']['art'] + '")');
-				$('.title').html(json['now_playing']['song']['title']);
-				$('.artist').html(json['now_playing']['song']['artist']);
-				text = json['now_playing']['song']['text'];
+		body.onclick = () => {
+			const req = body.requestFullscreen || body.webkitRequestFullscreen || body.mozRequestFullscreen;
+			if (req) {
+				req.call(body);
+				document.querySelector('audio').play();
 			}
-		})
-	}
-
-	nowplaying();
-	setInterval(function() {
-		nowplaying()
-	}, 4000);
-
-	p = 0;
-	px = 20;
-	py = 10;
-
-	function move() {
-		bg = $('.center-parent');
-		x = Math.floor(Math.random() * (80 - 20 + 1) + 20);
-		y = Math.floor(Math.random() * (60 - 10 + 1) + 10);
-
-		if (p == 0) {
-			p = 1;
-			bg.animate({
-				'background-position-x': px + '%',
-				'background-position-y': y + '%'
-			}, Math.abs(py - y) * 4000, 'linear', move);
-			py = y
-		} else {
-			p = 0;
-			bg.animate({
-				'background-position-x': x + '%',
-				'background-position-y': py + '%'
-			}, Math.abs(px - x) * 4000, 'linear', move);
-			px = x
-		}
-	}
-
-	move();
-
-	function toDataURL(url, callback) {
-		xhr = new XMLHttpRequest();
-		xhr.onload = function() {
-			reader = new FileReader();
-			reader.onloadend = function() {
-				callback(reader.result);
-			}
-			reader.readAsDataURL(xhr.response);
 		};
-		xhr.open('GET', url);
-		xhr.responseType = 'blob';
-		xhr.send();
-	}
 
-	function adjustBrightness(color, percent) {
-		adjustableLimit = percent < 0 ? color : 255 - color;
-		adjustAmount = Math.ceil(adjustableLimit * percent);
-		return color + adjustAmount;
-	}
+		function nowPlaying() {
+			$.getJSON(`https://azuracast.jammimvibez.com/api/nowplaying/reggae?refresh=${Date.now()}`, (json) => {
+				const song = json.now_playing.song;
+
+				if (song.text !== currentText) {
+					currentText = song.text;
+
+					toDataURL(song.art, (dataUrl) => {
+						const image = new Image();
+						image.src = dataUrl;
+
+						image.onload = () => {
+							const palette = new Palette(image);
+							let color = palette.getVibrantColor() || palette.getDominantColor();
+
+							color = color.map(c => adjustBrightness(c, -0.75));
+
+							$('.center-parent').css({
+								'background-image': `linear-gradient(rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.5), rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.5)), url("https://wsrv.nl/?url=${song.art}&blur=12")`
+							});
+						};
+					});
+
+					if ('mediaSession' in navigator) {
+						navigator.mediaSession.metadata = new MediaMetadata({
+							title: song.title,
+							artist: song.artist,
+							album: song.album,
+							artwork: [{ src: song.art }]
+						});
+
+						navigator.mediaSession.setPositionState({
+							duration: json.now_playing.duration,
+							playbackRate: 1,
+							position: json.now_playing.elapsed
+						});
+					}
+
+					$('.art').css('background-image', `url("${song.art}")`);
+					$('.title').text(song.title);
+					$('.artist').text(song.artist);
+				}
+			});
+		}
+
+		nowPlaying();
+		setInterval(nowPlaying, 4000);
+
+		let p = 0;
+		let px = 20;
+		let py = 10;
+
+		function move() {
+			const bg = $('.center-parent');
+			const x = Math.floor(Math.random() * (80 - 20 + 1) + 20);
+			const y = Math.floor(Math.random() * (60 - 10 + 1) + 10);
+
+			if (p === 0) {
+				p = 1;
+				bg.animate({
+					'background-position-x': `${px}%`,
+					'background-position-y': `${y}%`
+				}, Math.abs(py - y) * 4000, 'linear', move);
+				py = y;
+			} else {
+				p = 0;
+				bg.animate({
+					'background-position-x': `${x}%`,
+					'background-position-y': `${py}%`
+				}, Math.abs(px - x) * 4000, 'linear', move);
+				px = x;
+			}
+		}
+
+		move();
+
+		function toDataURL(url, callback) {
+			const xhr = new XMLHttpRequest();
+			xhr.onload = () => {
+				const reader = new FileReader();
+				reader.onloadend = () => callback(reader.result);
+				reader.readAsDataURL(xhr.response);
+			};
+			xhr.open('GET', url);
+			xhr.responseType = 'blob';
+			xhr.send();
+		}
+
+		function adjustBrightness(color, percent) {
+			const adjustableLimit = percent < 0 ? color : 255 - color;
+			const adjustAmount = Math.ceil(adjustableLimit * percent);
+			return Math.min(255, Math.max(0, color + adjustAmount));
+		}
+	});
 	</script>
 </body>
 </html>
