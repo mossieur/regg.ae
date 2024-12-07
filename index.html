@@ -138,9 +138,9 @@
 						palette = new Palette(image);
 						color = palette.getVibrantColor() ?? palette.getDominantColor();
 
-						color[0] = adjustBrightness( color[0], -0.4 );
-						color[1] = adjustBrightness( color[1], -0.4 );
-						color[2] = adjustBrightness( color[2], -0.4 );
+						color[0] = adjustBrightness( color[0], -0.75 );
+						color[1] = adjustBrightness( color[1], -0.75 );
+						color[2] = adjustBrightness( color[2], -0.75 );
 
 						$('.center-parent').attr('style', 'background-image: linear-gradient(rgba('+color[0]+','+color[1]+','+color[2]+',0.5), rgba('+color[0]+','+color[1]+','+color[2]+',0.5)), url("https://wsrv.nl/?url=' + json['now_playing']['song']['art'] + '&blur=12")');
 					}
