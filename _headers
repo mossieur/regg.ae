@@ -3,3 +3,5 @@
 	Referrer-Policy: strict-origin
 	X-Frame-Options: DENY
 	Permissions-Policy: autoplay=(self "https://regg.ae"), fullscreen=(self "https://regg.ae")
+	Cross-Origin-Opener-Policy: same-origin
+	Cross-Origin-Embedder-Policy: unsafe-none
