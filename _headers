@@ -1,5 +1,6 @@
 /
+	Access-Control-Allow-Origin: https://regg.ae
 	Content-Security-Policy: default-src 'none'; base-uri 'none'; form-action 'none'; style-src 'unsafe-inline'; script-src 'self'; img-src data: https:; media-src https://azuracast.jammimvibez.com; connect-src https://azuracast.jammimvibez.com;
-	Referrer-Policy: strict-origin
-	X-Frame-Options: DENY
 	Permissions-Policy: autoplay=(self), fullscreen=(self)
+	Referrer-Policy: no-referrer
+	X-Frame-Options: DENY
