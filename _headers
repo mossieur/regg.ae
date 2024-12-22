@@ -1,0 +1,5 @@
+/
+	Content-Security-Policy: default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; style-src 'unsafe-inline'; script-src 'self'; img-src data: https:; media-src https:; connect-src https:;
+	Permissions-Policy: autoplay=(self), fullscreen=(self)
+	Referrer-Policy: no-referrer
+	X-Frame-Options: DENY
